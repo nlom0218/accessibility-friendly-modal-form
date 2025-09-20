@@ -1,5 +1,5 @@
 import { createPortal } from 'react-dom';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 type props = {
   onClose?: () => void;
@@ -7,6 +7,8 @@ type props = {
 };
 
 export const FormModal = ({ onClose, onSubmit }: props) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && onClose) {
@@ -16,6 +18,10 @@ export const FormModal = ({ onClose, onSubmit }: props) => {
 
     document.body.style.overflow = 'hidden';
     document.addEventListener('keydown', handleKeyDown);
+
+    if (modalRef.current) {
+      modalRef.current.focus();
+    }
 
     return () => {
       document.body.style.overflow = 'auto';
@@ -40,6 +46,10 @@ export const FormModal = ({ onClose, onSubmit }: props) => {
       }}
     >
       <div
+        ref={modalRef}
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
         onClick={(e) => {
           e.stopPropagation();
         }}
@@ -55,15 +65,17 @@ export const FormModal = ({ onClose, onSubmit }: props) => {
           overflowY: 'auto',
         }}
       >
+        <h1 id="modal-title">신청 폼</h1>
+        <p id="modal-description">
+          이메일과 FE 경력 연차 등 간단한 정보를 입력해주세요.
+        </p>
         <form
           onSubmit={onSubmit}
           style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}
         >
-          <h1>신청 폼</h1>
-          <p>이메일과 FE 경력 연차 등 간단한 정보를 입력해주세요.</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
             <label htmlFor="name">이름/닉네임</label>
-            <input type="text" id="name" name="name" required autoFocus />
+            <input type="text" id="name" name="name" required />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
             <label htmlFor="email">이메일</label>
